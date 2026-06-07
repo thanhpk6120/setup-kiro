@@ -1,0 +1,15 @@
+{
+  "enabled": true,
+  "name": "Memorix Load Project Memory",
+  "description": "Khi mở project, bấm hook này để Kiro dùng memorix khởi tạo session và nạp memory/context CỦA RIÊNG project hiện tại vào ngữ cảnh.",
+  "version": "1",
+  "when": {
+    "type": "promptSubmit"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Dùng memorix để nạp memory CỦA RIÊNG project hiện tại (KHÔNG nạp memory của project khác):\n1. Gọi memorix_session_start với projectRoot là thư mục gốc project hiện tại và role \"coding assistant\" (việc này bind đúng project).\n2. Gọi memorix_session_context (limit 5) để lấy tóm tắt các session trước của project này.\n3. Gọi memorix_search với scope=\"project\" (BẮT BUỘC, KHÔNG dùng scope=\"global\"), query rộng theo tên project, limit 50 để liệt kê memory của project; nếu cần chi tiết dùng memorix_detail cho các ID quan trọng.\nSau đó tóm tắt ngắn gọn bằng tiếng Việt các memory/quyết định/bug đã lưu của project này. Không sửa file nào."
+  },
+  "workspaceFolderName": "trading-noti",
+  "shortName": "memorix-load-project-memory"
+}

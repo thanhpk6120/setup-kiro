@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hướng dẫn setup Kiro tương tự Claude Code</title>
+  <style>
+    :root {
+      --bg: #111318;
+      --panel: #1b1f2a;
+      --panel-2: #222838;
+      --text: #eef2ff;
+      --muted: #b8c0d9;
+      --accent: #8ab4ff;
+      --ok: #84e1bc;
+      --warn: #f6c177;
+      --bad: #f28fad;
+      --code: #0b0d12;
+      --border: #343b4f;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      background: var(--bg);
+      color: var(--text);
+    }
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 20px 56px;
+    }
+    h1, h2, h3 { line-height: 1.25; }
+    h1 { font-size: 2rem; margin: 0 0 8px; }
+    h2 { margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--border); }
+    h3 { margin-top: 22px; }
+    a { color: var(--accent); }
+    code, pre {
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+    }
+    code {
+      background: var(--code);
+      padding: 2px 5px;
+      border-radius: 5px;
+    }
+    pre {
+      overflow-x: auto;
+      background: var(--code);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      white-space: pre;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0;
+      background: var(--panel);
+      border: 1px solid var(--border);
+    }
+    th, td {
+      text-align: left;
+      vertical-align: top;
+      border: 1px solid var(--border);
+      padding: 10px;
+    }
+    th { background: var(--panel-2); }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      margin: 16px 0;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+    }
+    .muted { color: var(--muted); }
+    .ok { color: var(--ok); }
+    .warn { color: var(--warn); }
+    .bad { color: var(--bad); }
+    .toc li { margin: 4px 0; }
+    .small { font-size: 0.92rem; }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Hướng dẫn setup Kiro tương tự Claude Code hiện tại</h1>
+    <p class="muted">Tài liệu read-only được viết cho máy Windows hiện tại. Không chứa secret/token thật và không tự động sửa cấu hình Kiro.</p>
+  </header>
+
+  <section class="card">
+    <h2 style="margin-top:0; padding-top:0; border-top:0;">1. Kết quả phát hiện trên máy hiện tại</h2>
+    <div class="grid">
+      <div>
+        <h3>Kiro đã cài</h3>
+        <ul>
+          <li>Version CLI: <code>Kiro 0.12.263</code></li>
+          <li>CLI trên PATH: <code>C:\Users\Thanh\AppData\Local\Programs\Kiro\bin\kiro.cmd</code></li>
+          <li>App: <code>C:\Users\Thanh\AppData\Local\Programs\Kiro</code></li>
+          <li>User data: <code>C:\Users\Thanh\AppData\Roaming\Kiro</code></li>
+          <li>Global Kiro home: <code>C:\Users\Thanh\.kiro</code></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Trạng thái cấu hình Kiro</h3>
+        <ul>
+          <li><code>C:\Users\Thanh\.kiro\steering</code> tồn tại nhưng rỗng.</li>
+          <li><code>C:\Users\Thanh\.kiro\settings\cli.json</code> là <code>{}</code>.</li>
+          <li><code>C:\Users\Thanh\.kiro\skills</code> tồn tại.</li>
+          <li><code>C:\Users\Thanh\.kiro\powers</code> tồn tại.</li>
+          <li><code>D:\Job\AI\setup-kiro\.kiro</code> chưa có tại thời điểm kiểm tra.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <nav class="card toc">
+    <h2 style="margin-top:0; padding-top:0; border-top:0;">Mục lục</h2>
+    <ol>
+      <li><a href="#mapping">Mapping Claude Code → Kiro</a></li>
+      <li><a href="#steering">Setup instructions/rules bằng steering</a></li>
+      <li><a href="#mcp">Setup MCP</a></li>
+      <li><a href="#memory">Setup memory</a></li>
+      <li><a href="#plugins">Setup plugin/skills/powers/extensions</a></li>
+      <li><a href="#hooks">Hooks và giới hạn parity</a></li>
+      <li><a href="#commands">Lệnh kiểm tra nhanh</a></li>
+      <li><a href="#order">Thứ tự triển khai đề xuất</a></li>
+      <li><a href="#sources">Nguồn tham khảo</a></li>
+    </ol>
+  </nav>
+
+  <section id="mapping">
+    <h2>2. Mapping Claude Code → Kiro</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Claude Code hiện tại</th>
+          <th>Kiro tương đương</th>
+          <th>Ghi chú</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>C:\Users\Thanh\.claude\CLAUDE.md</code></td>
+          <td><code>C:\Users\Thanh\.kiro\steering\*.md</code></td>
+          <td>Dùng cho global instructions/rules. Project-specific thì dùng <code>.kiro\steering\*.md</code>.</td>
+        </tr>
+        <tr>
+          <td>Project <code>CLAUDE.md</code>, <code>AGENTS.md</code></td>
+          <td>Project <code>.kiro\steering\*.md</code> hoặc <code>AGENTS.md</code></td>
+          <td>Kiro có hỗ trợ global steering và có thể nhận <code>AGENTS.md</code> theo changelog.</td>
+        </tr>
+        <tr>
+          <td>MCP trong <code>C:\Users\Thanh\.claude.json</code></td>
+          <td><code>C:\Users\Thanh\.kiro\settings\mcp.json</code> hoặc <code>.kiro\settings\mcp.json</code></td>
+          <td>Workspace/project config override global config.</td>
+        </tr>
+        <tr>
+          <td>Claude skills/plugins</td>
+          <td><code>~\.kiro\skills</code>, <code>~\.kiro\powers</code>, VS Code extensions</td>
+          <td>Không phải mọi Claude skill/plugin port 1:1 sang Kiro.</td>
+        </tr>
+        <tr>
+          <td>Claude hooks trong <code>settings.json</code></td>
+          <td>Không có global hook parity trực tiếp đã xác nhận</td>
+          <td>Cần thay bằng steering, MCP tools, VS Code tasks/extensions, hoặc quy trình thủ công.</td>
+        </tr>
+        <tr>
+          <td>Memorix MCP/memory</td>
+          <td>MCP server <code>memorix</code> trong Kiro MCP config</td>
+          <td>Phụ thuộc Kiro gọi được MCP server local và workspace là git-backed nếu Memorix cần project binding.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="steering">
+    <h2>3. Setup instructions/rules bằng Kiro steering</h2>
+    <p>Kiro dùng <strong>steering</strong> cho instruction/rule. Nên tách global và project để tránh pollute mọi workspace.</p>
+
+    <h3>3.1 Global steering</h3>
+    <p>Dùng cho các rule luôn áp dụng giống global <code>CLAUDE.md</code>:</p>
+    <pre><code>C:\Users\Thanh\.kiro\steering\global.md</code></pre>
+
+    <p>Nội dung nên port từ <code>C:\Users\Thanh\.claude\CLAUDE.md</code>, nhưng rút gọn cho Kiro:</p>
+    <pre><code># Global Agent Instructions
+
+- Communicate in Vietnamese by default.
+- Be concise, practical, and explicit about uncertainty.
+- Prefer simple, surgical changes.
+- Do not overwrite user files or run destructive commands without confirmation.
+- Do not commit, create branches, or open PRs unless explicitly requested.
+- Use only Claude/Kiro-native agents/tools; do not route to Codex/Gemini.
+- Keep specs/plans/files inside the current workspace unless explicitly approved.
+- Do not hardcode secrets in config files.
+- For non-trivial coding work: plan briefly, verify with commands or runtime checks, then report evidence.</code></pre>
+
+    <h3>3.2 Project steering</h3>
+    <p>Dùng cho workspace hiện tại:</p>
+    <pre><code>D:\Job\AI\setup-kiro\.kiro\steering\project.md</code></pre>
+
+    <p>Mẫu tối thiểu:</p>
+    <pre><code># Project Steering: setup-kiro
+
+Goal: document how to configure Kiro to behave similarly to the current Claude Code setup.
+
+Rules:
+- This workspace is documentation/setup guidance only.
+- Do not write secrets or tokens into examples.
+- Prefer Windows PowerShell examples.
+- Keep generated setup files inside this workspace unless the user explicitly approves editing global Kiro config.</code></pre>
+
+    <h3>3.3 Priority</h3>
+    <ul>
+      <li>Steering project: <code>.kiro/steering</code></li>
+      <li>Steering global: <code>~/.kiro/steering</code></li>
+      <li>Theo tài liệu CLI, priority steering là <strong>Project &gt; Global</strong>.</li>
+    </ul>
+  </section>
+
+  <section id="mcp">
+    <h2>4. Setup MCP trong Kiro</h2>
+    <p>Kiro CLI hỗ trợ thêm MCP bằng <code>--add-mcp</code>, và file config chính là:</p>
+    <ul>
+      <li>Global: <code>C:\Users\Thanh\.kiro\settings\mcp.json</code></li>
+      <li>Project: <code>.kiro\settings\mcp.json</code></li>
+    </ul>
+
+    <h3>4.1 MCP schema mẫu</h3>
+    <pre><code>{
+  "mcpServers": {
+    "server-name": {
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "package-name"],
+      "env": {
+        "API_KEY": "${API_KEY}"
+      },
+      "disabled": false,
+      "autoApprove": [],
+      "disabledTools": []
+    }
+  }
+}</code></pre>
+
+    <h3>4.2 Remote MCP schema mẫu</h3>
+    <pre><code>{
+  "mcpServers": {
+    "remote-server": {
+      "url": "https://example.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${REMOTE_MCP_TOKEN}"
+      },
+      "disabled": false,
+      "autoApprove": []
+    }
+  }
+}</code></pre>
+
+    <h3>4.3 MCP đang thấy trong Claude Code</h3>
+    <p>Đã phát hiện các MCP server name hiện có trong Claude config. Không copy token thật vào tài liệu này.</p>
+    <table>
+      <thead>
+        <tr><th>MCP</th><th>Loại setup dự kiến trong Kiro</th><th>Lưu ý</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>memorix</code></td><td><code>command: memorix</code>, <code>args: ["serve"]</code></td><td>Dùng cho memory nếu Kiro gọi được MCP local.</td></tr>
+        <tr><td><code>gitnexus</code></td><td><code>cmd /c npx -y gitnexus mcp</code></td><td>Cần repo git/index phù hợp.</td></tr>
+        <tr><td><code>zai-mcp-server</code></td><td><code>cmd /c npx -y @z_ai/mcp-server</code></td><td>Cần env như <code>Z_AI_API_KEY</code>, không hardcode.</td></tr>
+        <tr><td><code>tradingview</code></td><td><code>uvx --python 3.13 --from tradingview-mcp-server tradingview-mcp</code></td><td>Cần Python/uvx hoạt động.</td></tr>
+        <tr><td><code>cloakbrowser</code></td><td><code>node D:/Job/AI/cloakbrowser/mcp-server-full.mjs</code></td><td>Cần path local còn tồn tại.</td></tr>
+        <tr><td><code>web-search-prime</code>, <code>web-reader</code>, <code>zread</code></td><td>Kiểm tra lại command trong <code>.claude.json</code> trước khi port</td><td>Không đủ thông tin command từ summary an toàn.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>4.4 Ví dụ <code>mcp.json</code> an toàn để bắt đầu</h3>
+    <pre><code>{
+  "mcpServers": {
+    "memorix": {
+      "command": "memorix",
+      "args": ["serve"],
+      "disabled": false,
+      "autoApprove": []
+    },
+    "gitnexus": {
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "gitnexus", "mcp"],
+      "disabled": false,
+      "autoApprove": []
+    },
+    "zai-mcp-server": {
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "@z_ai/mcp-server"],
+      "env": {
+        "Z_AI_MODE": "${Z_AI_MODE}",
+        "Z_AI_API_KEY": "${Z_AI_API_KEY}"
+      },
+      "disabled": false,
+      "autoApprove": []
+    },
+    "tradingview": {
+      "command": "uvx",
+      "args": ["--python", "3.13", "--from", "tradingview-mcp-server", "tradingview-mcp"],
+      "disabled": false,
+      "autoApprove": []
+    },
+    "cloakbrowser": {
+      "command": "node",
+      "args": ["D:/Job/AI/cloakbrowser/mcp-server-full.mjs"],
+      "disabled": false,
+      "autoApprove": []
+    }
+  }
+}</code></pre>
+
+    <p class="warn"><strong>Khuyến nghị:</strong> ban đầu để <code>autoApprove: []</code>. Chỉ auto-approve từng tool sau khi test ổn.</p>
+  </section>
+
+  <section id="memory">
+    <h2>5. Setup memory</h2>
+    <p>Claude Code hiện dùng Memorix hook + MCP. Kiro không có cùng hook runtime đã xác nhận, nên cách gần nhất là dùng <code>memorix</code> như MCP server.</p>
+
+    <h3>5.1 Cấu hình MCP</h3>
+    <pre><code>{
+  "mcpServers": {
+    "memorix": {
+      "command": "memorix",
+      "args": ["serve"],
+      "disabled": false,
+      "autoApprove": []
+    }
+  }
+}</code></pre>
+
+    <h3>5.2 Steering để buộc thói quen memory</h3>
+    <pre><code># Memory Protocol
+
+- At session start, check whether project memory is available.
+- Before asking user for old context, search memory first when possible.
+- When discovering important non-obvious project information, store a concise discovery memory if the memory MCP is available.
+- Never store secrets or temporary task state as durable memory.</code></pre>
+
+    <p class="warn"><strong>Giới hạn:</strong> Memorix trên máy này yêu cầu git-backed project để bind project scope. Workspace không có git hoặc bị safe.directory issue có thể làm memory fail.</p>
+  </section>
+
+  <section id="plugins">
+    <h2>6. Setup plugin/skills/powers/extensions</h2>
+    <h3>6.1 Kiro extensions</h3>
+    <p>Kiro CLI có các lệnh extension kiểu VS Code:</p>
+    <pre><code>kiro --list-extensions --show-versions
+kiro --install-extension publisher.extension
+kiro --install-extension C:\path\to\extension.vsix
+kiro --uninstall-extension publisher.extension</code></pre>
+
+    <h3>6.2 Kiro skills/powers</h3>
+    <p>Các thư mục đã tồn tại:</p>
+    <ul>
+      <li><code>C:\Users\Thanh\.kiro\skills</code></li>
+      <li><code>C:\Users\Thanh\.kiro\powers</code></li>
+    </ul>
+    <p>Không nên copy thẳng toàn bộ Claude skills/plugins sang Kiro. Nên port từng workflow có giá trị cao thành Kiro steering hoặc skill/power nếu Kiro format yêu cầu.</p>
+
+    <h3>6.3 Nhóm nên port trước</h3>
+    <ol>
+      <li>Global working rules: Vietnamese, concise, surgical, safe approvals.</li>
+      <li>MCP docs/search/memory tools.</li>
+      <li>Project-specific steering cho từng repo.</li>
+      <li>Chỉ sau đó mới port các workflow phức tạp như OMC/GSD nếu Kiro hỗ trợ đầy đủ.</li>
+    </ol>
+  </section>
+
+  <section id="hooks">
+    <h2>7. Hooks và giới hạn parity</h2>
+    <p>Claude Code hiện có hooks trong <code>C:\Users\Thanh\.claude\settings.json</code> cho:</p>
+    <ul>
+      <li><code>SessionStart</code></li>
+      <li><code>UserPromptSubmit</code></li>
+      <li><code>PreToolUse</code></li>
+      <li><code>PostToolUse</code></li>
+      <li><code>PreCompact</code></li>
+      <li><code>Stop</code></li>
+    </ul>
+    <p>Kiro chưa có global hook parity trực tiếp trong thông tin đã tìm. Vì vậy:</p>
+    <table>
+      <thead><tr><th>Claude hook behavior</th><th>Cách thay thế trong Kiro</th></tr></thead>
+      <tbody>
+        <tr><td>Nhắc instruction mỗi session</td><td>Global steering + project steering.</td></tr>
+        <tr><td>Memorix auto hook</td><td>Memorix MCP + steering yêu cầu agent chủ động gọi memory.</td></tr>
+        <tr><td>GitNexus context guard</td><td>GitNexus MCP + steering yêu cầu dùng khi explore/debug/impact.</td></tr>
+        <tr><td>Permission/guard scripts</td><td>Steering rule + không auto-approve tool nguy hiểm.</td></tr>
+        <tr><td>Status line HUD</td><td>Không có parity rõ; có thể cần Kiro/VS Code extension riêng.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="commands">
+    <h2>8. Lệnh kiểm tra nhanh trên Windows</h2>
+    <pre><code># Kiểm tra Kiro CLI
+kiro --help
+kiro --version
+kiro --status
+
+# Kiểm tra extension
+kiro --list-extensions --show-versions
+
+# Mở workspace bằng Kiro
+kiro D:\Job\AI\setup-kiro
+
+# Thêm MCP bằng CLI, ví dụ local command
+kiro --add-mcp '{"name":"memorix","command":"memorix","args":["serve"]}'
+
+# Kiểm tra thư mục global Kiro
+Get-ChildItem C:\Users\Thanh\.kiro -Force
+Get-ChildItem C:\Users\Thanh\.kiro\steering -Force
+Get-ChildItem C:\Users\Thanh\.kiro\settings -Force</code></pre>
+
+    <p class="warn">PowerShell có thể cần escape JSON khác nhau theo shell. Nếu lỗi quote, ưu tiên tạo file <code>mcp.json</code> thủ công thay vì dùng <code>--add-mcp</code>.</p>
+  </section>
+
+  <section id="order">
+    <h2>9. Thứ tự triển khai đề xuất</h2>
+    <ol>
+      <li><strong>Không port secret.</strong> Đưa API key/token sang environment variables trước.</li>
+      <li>Tạo <code>C:\Users\Thanh\.kiro\steering\global.md</code> từ rule ngắn gọn của <code>CLAUDE.md</code>.</li>
+      <li>Tạo project <code>.kiro\steering\project.md</code> cho từng workspace cần dùng Kiro.</li>
+      <li>Tạo <code>C:\Users\Thanh\.kiro\settings\mcp.json</code> với 1-2 MCP dễ test trước: <code>memorix</code>, <code>gitnexus</code>.</li>
+      <li>Mở Kiro, kiểm tra MCP tools xuất hiện và chạy được.</li>
+      <li>Thêm dần các MCP có dependency nặng: <code>zai-mcp-server</code>, <code>tradingview</code>, <code>cloakbrowser</code>.</li>
+      <li>Sau khi ổn, cân nhắc project-level MCP override ở <code>.kiro\settings\mcp.json</code> cho từng repo.</li>
+      <li>Chỉ bật <code>autoApprove</code> sau khi đã biết rõ tool nào an toàn.</li>
+    </ol>
+  </section>
+
+  <section class="card">
+    <h2 style="margin-top:0; padding-top:0; border-top:0;">10. Checklist setup</h2>
+    <ul>
+      <li><input type="checkbox"> Đã tạo global steering.</li>
+      <li><input type="checkbox"> Đã tạo project steering nếu cần.</li>
+      <li><input type="checkbox"> Đã tạo MCP config không chứa secret thật.</li>
+      <li><input type="checkbox"> Đã kiểm tra <code>kiro --list-extensions --show-versions</code>.</li>
+      <li><input type="checkbox"> Đã mở Kiro và xác nhận MCP server/tool hoạt động.</li>
+      <li><input type="checkbox"> Đã giữ <code>autoApprove</code> rỗng cho tool chưa kiểm chứng.</li>
+      <li><input type="checkbox"> Đã ghi lại phần không thể parity 1:1: hooks/statusLine/OMC runtime.</li>
+    </ul>
+  </section>
+
+  <section id="sources">
+    <h2>11. Nguồn tham khảo</h2>
+    <ul>
+      <li><a href="https://kiro.dev/docs/mcp/configuration/">Kiro docs — MCP Configuration</a></li>
+      <li><a href="https://kiro.dev/docs/cli/chat/configuration/">Kiro CLI docs — Configuration</a></li>
+      <li><a href="https://kiro.dev/changelog/remote-mcp-and-global-steering/">Kiro changelog — Remote MCP and global steering</a></li>
+      <li><a href="https://kiro.dev/docs/enterprise/governance/mcp/">Kiro docs — Enterprise MCP Governance</a></li>
+      <li><a href="https://kiro.dev/blog/teaching-kiro-new-tricks-with-agent-steering-and-mcp/">Kiro blog — Teaching Kiro new tricks with agent steering and MCP</a></li>
+    </ul>
+  </section>
+
+  <footer class="muted small">
+    <p>Generated for workspace <code>D:\Job\AI\setup-kiro</code>. This guide is documentation only; it does not apply any Kiro configuration by itself.</p>
+  </footer>
+</main>
+</body>
+</html>

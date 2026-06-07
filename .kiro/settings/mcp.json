@@ -1,0 +1,65 @@
+{
+  "mcpServers": {
+    "memorix": {
+      "command": "memorix",
+      "args": [
+        "serve"
+      ],
+      "disabled": false,
+      "autoApprove": [
+        "*"
+      ]
+    },
+    "gitnexus": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "gitnexus",
+        "mcp"
+      ],
+      "disabled": false,
+      "autoApprove": [
+        "*"
+      ]
+    },
+    "tradingview": {
+      "command": "uvx",
+      "args": [
+        "--python",
+        "3.13",
+        "--from",
+        "tradingview-mcp-server",
+        "tradingview-mcp"
+      ],
+      "disabled": false,
+      "autoApprove": [
+        "*"
+      ]
+    },
+    "cloakbrowser": {
+      "command": "node",
+      "args": [
+        "D:/Job/AI/cloakbrowser/mcp-server-full.mjs"
+      ],
+      "disabled": false,
+      "autoApprove": [
+        "*"
+      ]
+    },
+    "context7": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "@upstash/context7-mcp@latest"
+      ],
+      "disabled": false,
+      "autoApprove": [
+        "*"
+      ]
+    }
+  }
+}

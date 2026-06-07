@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Memory Search Before Task",
+  "description": "Trước khi một spec task bắt đầu, gọi memorix_search để tìm các thông tin, quyết định và bài học liên quan dựa trên context hiện tại của task.",
+  "version": "1",
+  "when": {
+    "type": "preTaskExecution"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Trước khi thực thi task này, hãy dùng công cụ memorix_search để tìm trong memory các thông tin liên quan đến context hiện tại của task (mục tiêu, file đang chỉnh sửa, module liên quan, các quyết định/bài học trước đó). Tóm tắt ngắn gọn bằng tiếng Việt những gì tìm được và áp dụng nó vào việc thực hiện task. Nếu không tìm thấy gì liên quan, nói rõ và tiếp tục bình thường."
+  }
+}
